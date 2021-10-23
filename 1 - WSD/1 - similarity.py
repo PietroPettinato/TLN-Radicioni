@@ -102,9 +102,18 @@ def find_path(s1, s2):
 
 
 def sim_shortest_path(s1, s2):
+    path_len = 0
+    if s1.pos() == 'v':
+        p1 = extract_ancestors([syn1[i]])
+        # p1.append(syn1[i])
+        p2 = extract_ancestors([syn2[j]])
+        p2.append(syn2[j])
+        # print("p1: ", p1)
+        # print("p2: ", p2)
+        path = p1 + p2
+        path_len = len(path) + 1
     lcs = lowest_common_subsumer(s1, s2)
     # print("lcs: ", lcs)
-    path_len = 0
     if lcs:
         p1 = find_path([s1], lcs)
         p2 = find_path([s2], lcs)
@@ -114,7 +123,7 @@ def sim_shortest_path(s1, s2):
         path = p1 + p2
         path_len = len(path)
     if path_len == 0:
-        return 0
+        return None
     return (2 * max_depth - path_len) / (2 * max_depth)
     # return 1/(1+path_len) # con questa formula esce lo stesso risultato della libreria
 
@@ -166,8 +175,8 @@ def check_depth(syn):
 def check_shortest_path(syn1, syn2):
     for i in range(len(syn1)):
         for j in range(len(syn2)):
-            print("\nc1[" + str(i) + "]: " + str(syn1[i]))
-            print("c2[" + str(j) + "]: " + str(syn2[j]))
+            # print("\nc1[" + str(i) + "]: " + str(syn1[i]))
+            # print("c2[" + str(j) + "]: " + str(syn2[j]))
             lcs = lowest_common_subsumer(syn1[i], syn2[j])
             if lcs:
                 p1 = find_path([syn1[i]], lcs)
@@ -183,9 +192,18 @@ def check_shortest_path(syn1, syn2):
                     print("real path len: ", real_path)
                     input("ERROR: Press Enter to continue...")
             else:
+                p1 = extract_ancestors([syn1[i]])
+                # p1.append(syn1[i])
+                p2 = extract_ancestors([syn2[j]])
+                p2.append(syn2[j])
+                # print("p1: ", p1)
+                # print("p2: ", p2)
+                my_path = p1 + p2
                 real_path = syn1[i].shortest_path_distance(syn2[j], simulate_root=True and syn1[i].pos() == 'v')
-                if real_path:
+                if real_path and (len(my_path) + 1) != real_path:
                     print("lcs is None  : ", lcs)
+                    print("path: ", my_path)
+                    print("my_path len  : ", len(my_path))
                     print("real path len: ", real_path)
                     input("ERROR: Press Enter to continue...")
     print("------ ok, shortest_path")
@@ -283,16 +301,11 @@ syn2 = wn.synsets(w2)
 # check_depth(syn1) # todo qui errore depth a Synset('beloved.n.01')
 # check_depth(syn2)
 # check_lowest_common_subsumer(syn1, syn2)
-check_shortest_path(syn1, syn2)
-# check_sim_wu_palmer(syn1, syn2) # todo qui errore quando il primo synset ha pos=='v', la differenza my_sim-right_sim con i pos relativi è nella tabella di seguito
-input("STOP HERE")
-'''
-1|2
-v|n =  0.06
-v|v = -0.12 # è il doppio
-'''
+# check_shortest_path(syn1, syn2)
+# check_sim_wu_palmer(syn1, syn2)
 # check_leakcock_chodorow(syn1, syn2)
-# check_sim_shortest_path(syn1, syn2)
+# check_sim_shortest_path(syn1, syn2) # da errore ma sim_shortest_path() funziona
+# input("STOP HERE")
 
 
 s1 = []
