@@ -142,11 +142,29 @@ def sim_leakcock_chodorow(s1, s2):
         path = p1 + p2
     # print("path: ", path)
     # return - log((1 + len(path)) / (1 + 2 * max_depth))
-    if s1.pos == 'n':
-        return - log((1 + len(path)) / (1 + 2 * max_depth_n))
-    elif s1.pos == 'v':
-        return - log(( 1 + len(path)) / (1 + 2 * max_depth_v))
-    return - log((1 + len(path)) / (1 + 2 * max_depth))
+    if lcs is None and s1.pos() == 'v':
+        p1 = extract_ancestors([syn1[i]])
+        # p1.append(syn1[i])
+        p2 = extract_ancestors([syn2[j]])
+        p2.append(syn2[j])
+        # print("p1: ", p1)
+        # print("p2: ", p2)
+        path = p1 + p2
+        return - log((1 + len(path) +1) / (2 * (max_depth_v +1)))
+    if s1.pos() == 'v':
+        return - log((1 + len(path)) / (2 * max_depth_v))
+    return - log((1 + len(path)) / (2 * max_depth))
+    # return - log((1 + len(path)) / (1 + 2 * comp_max_depth(s1)))
+
+
+def comp_max_depth(pos):
+    depth = 0
+    for ii in wn.all_synsets(pos):
+        try:
+            depth = max(depth, ii.max_depth())
+        except RuntimeError:
+            print(ii)
+    return depth
 
 
 def pearson_index():
@@ -285,11 +303,15 @@ def check_leakcock_chodorow(syn1, syn2):
 # --------|--------|--------------
 #   love  |  sex   | 6.77
 
-max_depth = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets())
-max_depth_n = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('n'))
-max_depth_v = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('v'))
+# max_depth = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('n'))
+# max_depth_v = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('v'))
 
-# forse devo calcolare max_depth per ogni synset usando syn.max_depth()
+max_depth = comp_max_depth('n')
+# print("max_depth  : ", max_depth)
+max_depth_v = comp_max_depth('v')
+# print("max_depth_v: ", max_depth_v)
+
+
 
 w1 = 'love'
 w2 = 'sex'
@@ -335,6 +357,7 @@ for i in range(len(syn1)):
             right_sim_lc.append(syn1[i].lch_similarity(syn2[j]))
         except WordNetError:
             right_sim_lc.append(None)
+
 
 sim_df = pd.DataFrame({
     "synset 1": s1,
