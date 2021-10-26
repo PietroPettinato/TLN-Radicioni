@@ -18,22 +18,28 @@ def sim_wu_palmer(sense1, sense2):
 def lowest_common_subsumer(sense1, sense2):
     ancestors = extract_ancestors([sense1])
     ancestors.append(sense1)
+    print('anc1: ', ancestors)
     ancestors2 = extract_ancestors([sense2])
     ancestors2.append(sense2)
+    print('anc2: ', ancestors2)
     res = list(set(ancestors).intersection(ancestors2))
+    print("res: ", res)
     if len(res) == 0:
         return None
+    '''
     if sense1.lowest_common_hypernyms(sense2)[0] != ancestors[max([ancestors.index(i) for i in res])]:
         print("\n\n--------------- ERROR: lowest_common_subsumer is not the right one")
         print("right: ", sense1.lowest_common_hypernyms(sense2))
         print("mine : ", ancestors[max([ancestors.index(i) for i in res])])
         input("Press Enter to continue...")
+    '''
     return ancestors[max([ancestors.index(i) for i in res])]
 
 
 def extract_ancestors(sense: list):
     ancestors = []
     while sense[0].hypernyms():
+        print("hyp: ", sense[0].hypernyms())
         ancestors.insert(0, sense[0].hypernyms()[0])
         sense = sense[0].hypernyms()
     return ancestors
@@ -124,8 +130,8 @@ def sim_shortest_path(s1, s2):
         path_len = len(path)
     if path_len == 0:
         return None
-    return (2 * max_depth - path_len) / (2 * max_depth)
-    # return 1/(1+path_len) # con questa formula esce lo stesso risultato della libreria
+    # return (2 * max_depth - path_len) / (2 * max_depth)
+    return 1/(1+path_len) # con questa formula esce lo stesso risultato della libreria
 
 
 def sim_leakcock_chodorow(s1, s2):
@@ -153,7 +159,7 @@ def sim_leakcock_chodorow(s1, s2):
         return - log((1 + len(path) +1) / (2 * (max_depth_v +1)))
     if s1.pos() == 'v':
         return - log((1 + len(path)) / (2 * max_depth_v))
-    return - log((1 + len(path)) / (2 * max_depth))
+    return - log((1 + len(path)) / (2 * max_depth)) # con questa formula esce lo stesso risultato della libreria
     # return - log((1 + len(path)) / (1 + 2 * comp_max_depth(s1)))
 
 
@@ -232,10 +238,12 @@ def check_lowest_common_subsumer(syn1, syn2):
         for j in range(len(syn2)):
             my_lcs = lowest_common_subsumer(syn1[i], syn2[j])
             right_lcs = syn1[i].lowest_common_hypernyms(syn2[j])
-            print("my_lcs  : ", my_lcs)
-            print("real lcs: ", right_lcs)
+            # print("my_lcs  : ", my_lcs)
+            # print("real lcs: ", right_lcs)
             # if (my_lcs is [] and right_lcs) or (my_lcs not in right_lcs):
             if my_lcs and right_lcs and my_lcs not in right_lcs:
+                print("\nc1[" + str(i) + "]: " + str(syn1[i]))
+                print("c2[" + str(j) + "]: " + str(syn2[j]))
                 print("my_lcs  : ", my_lcs)
                 print("real lcs: ", right_lcs)
                 input("ERROR: Press Enter to continue...")
@@ -299,6 +307,21 @@ def check_leakcock_chodorow(syn1, syn2):
                 print("right sim error")
 
 
+def prova(s1):
+    path = {}
+    if not s1.hypernyms():
+        print("return {}")
+        return {}
+    path[s1] = s1.hypernyms()
+    print('path: ', path)
+    for s in s1.hypernyms():
+        path.update(prova(s))
+        print('path update: ', path)
+    print('path finale: ', path)
+    return path
+
+
+
 #  Word 1 | Word 2 | Human (mean)
 # --------|--------|--------------
 #   love  |  sex   | 6.77
@@ -313,12 +336,15 @@ max_depth_v = comp_max_depth('v')
 
 
 
-w1 = 'love'
-w2 = 'sex'
+w1 = 'tiger' #'love'
+w2 = 'cat' #'sex'
 syn1 = wn.synsets(w1)
 syn2 = wn.synsets(w2)
 # s1 = syn1[0]
 # s2 = syn2[0]
+
+print("\n\nprova finale dopo aver finito tutto: ", prova(syn1[0]))
+
 
 # check_depth(syn1) # todo qui errore depth a Synset('beloved.n.01')
 # check_depth(syn2)
@@ -327,7 +353,7 @@ syn2 = wn.synsets(w2)
 # check_sim_wu_palmer(syn1, syn2)
 # check_leakcock_chodorow(syn1, syn2)
 # check_sim_shortest_path(syn1, syn2) # da errore ma sim_shortest_path() funziona
-# input("STOP HERE")
+input("STOP HERE")
 
 
 s1 = []
