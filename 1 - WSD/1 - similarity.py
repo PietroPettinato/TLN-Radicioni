@@ -15,7 +15,7 @@ def sim_wu_palmer(sense1, sense2):
     return (2 * depth(lcs)) / (depth(sense1) + depth(sense2))
 
 
-def lowest_common_subsumer(sense1, sense2):
+def bck_lowest_common_subsumer(sense1, sense2):
     ancestors = extract_ancestors([sense1])
     ancestors.append(sense1)
     print('anc1: ', ancestors)
@@ -34,6 +34,32 @@ def lowest_common_subsumer(sense1, sense2):
         input("Press Enter to continue...")
     '''
     return ancestors[max([ancestors.index(i) for i in res])]
+
+
+def lowest_common_subsumer(sense1, sense2):
+    ancestors = get_all_ancestors(sense1)
+    # print('anc1: ', ancestors)
+    ancestors2 = get_all_ancestors(sense2)
+    # print('anc2: ', ancestors2)
+    res = list(set(ancestors).intersection(ancestors2))
+    print("res: ", res)
+    if len(res) == 0:
+        return None
+    '''
+    if sense1.lowest_common_hypernyms(sense2)[0] != ancestors[max([ancestors.index(i) for i in res])]:
+        print("\n\n--------------- ERROR: lowest_common_subsumer is not the right one")
+        print("right: ", sense1.lowest_common_hypernyms(sense2))
+        print("mine : ", ancestors[max([ancestors.index(i) for i in res])])
+        input("Press Enter to continue...")
+    '''
+    # print("lcs: ", res[-1])
+    '''
+    x = res[-1]
+    while x in res:
+        x = ancestors[x]
+        print("x: ", x)
+    '''
+    return res[-1]
 
 
 def extract_ancestors(sense: list):
@@ -307,24 +333,41 @@ def check_leakcock_chodorow(syn1, syn2):
                 print("right sim error")
 
 
-def prova(s1):
+def get_all_ancestors(s1):
     path = {}
     if not s1.hypernyms():
-        print("return {}")
-        return {}
+        path[s1] = ""
+        return path
     path[s1] = s1.hypernyms()
-    print('path: ', path)
     for s in s1.hypernyms():
-        path.update(prova(s))
-        print('path update: ', path)
-    print('path finale: ', path)
+        path.update(get_all_ancestors(s))
     return path
+
+
+
+# trova il percorso minimo fra il nodo e la radice
+def get_min_ancestors(s1):
+    path = [s1]
+    if not s1.hypernyms():
+        return path
+    count = 0
+    min_ancestors = []
+    for s in s1.hypernyms():
+        tmp = get_min_ancestors(s)
+        if len(tmp) < count or count == 0:
+            count = len(tmp)
+            min_ancestors = tmp
+    path += min_ancestors
+    return path
+
 
 
 
 #  Word 1 | Word 2 | Human (mean)
 # --------|--------|--------------
-#   love  |  sex   | 6.77
+#  love   |  sex   | 6.77
+#  tiger  |  cat   | 7.35
+
 
 # max_depth = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('n'))
 # max_depth_v = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('v'))
@@ -343,8 +386,10 @@ syn2 = wn.synsets(w2)
 # s1 = syn1[0]
 # s2 = syn2[0]
 
-print("\n\nprova finale dopo aver finito tutto: ", prova(syn1[0]))
-
+print(syn1[0])
+print(syn2[0])
+print("\n\nfinale: ", lowest_common_subsumer(syn1[0], syn2[0]))
+print("correct: ", syn1[0].lowest_common_hypernyms(syn2[0]))
 
 # check_depth(syn1) # todo qui errore depth a Synset('beloved.n.01')
 # check_depth(syn2)
