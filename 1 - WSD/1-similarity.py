@@ -190,11 +190,28 @@ def find_short_path(s1, s2):
     return path
 
 
-def find_path(s1, s2):
+def find_path_backup(s1, s2):
     path = []
     if s2 in s1:
         return path
     while s1[0].hypernyms() and s2:
+        if s2 in s1[0].hypernyms():
+            # path.insert(0, s2)
+            path.append(s2)
+            break
+        # path.insert(0, s1[0].hypernyms()[0])
+        path.append(s1[0].hypernyms()[0])
+        s1 = s1[0].hypernyms()
+    # print(path)
+    # todo se s2 non viene trovato (risolgo fino ad "entity" ma non c'è) allora dovrei tornare None o [], questo non può accadere se s2==lcs
+    return path
+
+
+def find_path(s1, s2):
+    path = []
+    if s2 in s1:
+        return path
+    for x in s1.hypernyms():
         if s2 in s1[0].hypernyms():
             # path.insert(0, s2)
             path.append(s2)
