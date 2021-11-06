@@ -71,7 +71,7 @@ def lowest_common_subsumer(sense1, sense2):
     max = 0
     lcs = None
     for s in inters:
-        path = get_path(s, search_max=True)
+        path = get_path_to_root(s, search_max=True)
         path_len = len(path)
         if path_len > max:
             lcs = s
@@ -100,14 +100,14 @@ def get_all_ancestors(s1):
 
 
 # trova il percorso minimo fra il nodo e la radice
-def get_path(s1, search_max: bool = False):
+def get_path_to_root(s1, search_max: bool = False):
     path = [s1]
     if not s1.hypernyms():
         return path
     count = 0
     ancestors = []
     for s in s1.hypernyms():
-        tmp = get_path(s, search_max)
+        tmp = get_path_to_root(s, search_max)
         if search_max:
             if len(tmp) > count or count == 0:
                 count = len(tmp)
@@ -116,6 +116,31 @@ def get_path(s1, search_max: bool = False):
             if len(tmp) < count or count == 0:
                 count = len(tmp)
                 ancestors = tmp
+    path += ancestors
+    return path
+
+
+def get_path(s1, s2, search_max: bool = False):
+    path = [s1]
+    if not s1.hypernyms():
+        return []
+    elif s2 in s1.hypernyms():
+        return [s2]
+    count = 0
+    ancestors = []
+    for s in s1.hypernyms():
+        tmp = get_path(s, s2, search_max)
+        if search_max:
+            if (len(tmp) > count or count == 0) and len(tmp) != 0:
+                count = len(tmp)
+                ancestors = tmp
+        else:
+            if (len(tmp) < count or count == 0) and len(tmp) != 0:
+                count = len(tmp)
+                ancestors = tmp
+
+    if len(ancestors) == 0:
+        return []
     path += ancestors
     return path
 
@@ -413,6 +438,54 @@ syn2 = wn.synsets(w2)
 # s1 = syn1[0]
 # s2 = syn2[0]
 
+
+# problema con il calcolo di sim_sp (per il fatto dei più hipernym)
+# ss1 = wn.synset('book.n.01')
+# ss2 = wn.synset('paper.n.05')
+
+def compute_all_sim(w1, w2):
+    sim_wup = []
+    sim_sp = []
+    sim_lc = []
+    for syn1 in wn.synsets(w1):
+        for syn2 in wn.synsets(w2):
+            sim_wup.append(sim_wu_palmer(syn1, syn2))
+
+            try:
+                sim_sp.append(sim_shortest_path(syn1, syn2))
+            except Exception:
+                sim_sp.append(None)
+
+            sim_lc.append(sim_leakcock_chodorow(syn1, syn2))
+    max_wup = pd.Series(sim_wup, dtype=float)
+    max_sp = pd.Series(sim_sp, dtype=float)
+    max_lc = pd.Series(sim_lc, dtype=float)
+    return max_wup.max(), max_sp.max(), max_lc.max()
+
+
+def run():
+    # read the file
+    df = pd.read_csv('WordSim353.csv', header=0)
+    # print(df.to_string())
+
+    sim_wup = []
+
+    for row in df.index:
+        w1 = df.loc[row, 'Word 1']
+        w2 = df.loc[row, 'Word 2']
+        result = compute_all_sim(w1, w2)
+        print(result)
+        # sim_wup.append()
+        # sim_wup.append()
+
+    # df.insert(3, 'sim wup', sim_wup)
+    # print(df.to_string())
+    print(df)
+
+    exit()
+
+
+run()
 
 
 
