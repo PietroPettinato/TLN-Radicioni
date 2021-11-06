@@ -221,8 +221,12 @@ def sim_shortest_path(s1, s2):
     lcs = lowest_common_subsumer(s1, s2)
     # print("lcs: ", lcs)
     if lcs:
-        p1 = find_path([s1], lcs)
-        p2 = find_path([s2], lcs)
+        # p1 = find_path([s1], lcs)
+        p1 = get_path(s1, lcs)
+        # print(p1)
+        # p2 = find_path([s2], lcs)
+        p2 = get_path(s2, lcs)
+        # print(p2)
         p2.insert(0, s2)
         p2.reverse()
         p2.remove(lcs)
@@ -240,8 +244,10 @@ def sim_leakcock_chodorow(s1, s2):
     path = []
     lcs = lowest_common_subsumer(s1, s2)
     if lcs:
-        p1 = find_path([s1], lcs)
-        p2 = find_path([s2], lcs)
+        # p1 = find_path([s1], lcs)
+        p1 = get_path(s1, lcs)
+        # p2 = find_path([s2], lcs)
+        p2 = get_path(s2, lcs)
         p2.insert(0, s2)
         p2.reverse()
         p2.remove(lcs)
@@ -440,8 +446,9 @@ syn2 = wn.synsets(w2)
 
 
 # problema con il calcolo di sim_sp (per il fatto dei più hipernym)
-# ss1 = wn.synset('book.n.01')
-# ss2 = wn.synset('paper.n.05')
+ss1 = wn.synset('book.n.01')
+ss2 = wn.synset('paper.n.05')
+
 
 def compute_all_sim(w1, w2):
     sim_wup = []
@@ -450,17 +457,13 @@ def compute_all_sim(w1, w2):
     for syn1 in wn.synsets(w1):
         for syn2 in wn.synsets(w2):
             sim_wup.append(sim_wu_palmer(syn1, syn2))
-
-            try:
-                sim_sp.append(sim_shortest_path(syn1, syn2))
-            except Exception:
-                sim_sp.append(None)
-
+            sim_sp.append(sim_shortest_path(syn1, syn2))
             sim_lc.append(sim_leakcock_chodorow(syn1, syn2))
-    max_wup = pd.Series(sim_wup, dtype=float)
-    max_sp = pd.Series(sim_sp, dtype=float)
+    #max_wup = pd.Series(sim_wup, dtype=float)
+    #max_sp = pd.Series(sim_sp, dtype=float)
     max_lc = pd.Series(sim_lc, dtype=float)
-    return max_wup.max(), max_sp.max(), max_lc.max()
+    # return max_wup.max(), max_sp.max(), max_lc.max()
+    return max_lc.max()
 
 
 def run():
@@ -473,8 +476,9 @@ def run():
     for row in df.index:
         w1 = df.loc[row, 'Word 1']
         w2 = df.loc[row, 'Word 2']
-        result = compute_all_sim(w1, w2)
-        print(result)
+        check_leakcock_chodorow(wn.synsets(w1), wn.synsets(w2))
+        #result = compute_all_sim(w1, w2)
+        #print(result)
         # sim_wup.append()
         # sim_wup.append()
 
@@ -518,7 +522,10 @@ for i in range(len(syn1)):
         right_sim_wp.append(syn1[i].wup_similarity(syn2[j]))
 
         my_sim_sp.append(sim_shortest_path(syn1[i], syn2[j]))
+        # print('mia   : ', my_sim_sp[-1])
         right_sim_sp.append(syn1[i].path_similarity(syn2[j]))
+        # print('giusta: ', right_sim_sp[-1])
+
 
         my_sim_lc.append(sim_leakcock_chodorow(syn1[i], syn2[j]))
         try:
