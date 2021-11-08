@@ -122,10 +122,12 @@ def get_path_to_root(s1, search_max: bool = False):
 
 def get_path(s1, s2, search_max: bool = False):
     path = [s1]
+    if s1 == s2:
+        return [s1]
     if not s1.hypernyms():
         return []
     elif s2 in s1.hypernyms():
-        return [s2]
+        return [s1, s2]
     count = 0
     ancestors = []
     for s in s1.hypernyms():
