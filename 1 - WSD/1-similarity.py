@@ -138,7 +138,6 @@ def get_path(s1, s2, search_max: bool = False):
             if (len(tmp) < count or count == 0) and len(tmp) != 0:
                 count = len(tmp)
                 ancestors = tmp
-
     if len(ancestors) == 0:
         return []
     path += ancestors
@@ -190,7 +189,7 @@ def find_short_path(s1, s2):
     return path
 
 
-def find_path_backup(s1, s2):
+def find_path(s1, s2):
     path = []
     if s2 in s1:
         return path
@@ -207,11 +206,11 @@ def find_path_backup(s1, s2):
     return path
 
 
-def find_path(s1, s2):
+def bck_find_path(s1, s2):
     path = []
     if s2 in s1:
         return path
-    for x in s1.hypernyms():
+    for x in s1[0].hypernyms():
         if s2 in s1[0].hypernyms():
             # path.insert(0, s2)
             path.append(s2)
@@ -255,7 +254,7 @@ def sim_shortest_path(s1, s2):
     return 1 / (1 + path_len)  # con questa formula esce lo stesso risultato della libreria
 
 
-def sim_leakcock_chodorow(s1, s2):
+def bck_sim_leakcock_chodorow(s1, s2):
     if s1.pos() != s2.pos():
         return None
     path = []
@@ -284,6 +283,48 @@ def sim_leakcock_chodorow(s1, s2):
         return - log((1 + len(path)) / (2 * max_depth_v))
     return - log((1 + len(path)) / (2 * max_depth))  # con questa formula esce lo stesso risultato della libreria
     # return - log((1 + len(path)) / (1 + 2 * comp_max_depth(s1)))
+
+
+def sim_leakcock_chodorow(s1, s2):
+    if s1.pos() != s2.pos():
+        return None
+    path = []
+    lcs = lowest_common_subsumer(s1, s2)
+    # print('lcs: ', lcs)
+    if lcs:
+        pp1 = find_path([s1], lcs)
+        # print("pp1: ", pp1)
+        p1 = get_path(s1, lcs)
+        p1.remove(s1)
+        # print("p1: ", p1)
+        pp2 = find_path([s2], lcs)
+        # print("pp2: ", pp2)
+        p2 = get_path(s2, lcs)
+        # print("p2: ", p2)
+        # p2.insert(0, s2)
+        p2.reverse()
+        p2.remove(lcs)
+        path = p1 + p2
+        # print(len(path))
+        # print("sp1: ", s1.shortest_path_distance(s2, simulate_root=True and s1.pos() == 'v'))
+    # print("path: ", path)
+    # return - log((1 + len(path)) / (1 + 2 * max_depth))
+    if lcs is None and s1.pos() == 'v':
+        p1 = extract_ancestors([s1])
+        # p1.append(syn1[i])
+        p2 = extract_ancestors([s2])
+        p2.append(s2)
+        # print("p1: ", p1)
+        # print("p2: ", p2)
+        path = p1 + p2
+        print("formula 1")
+        return - log((1 + len(path) + 1) / (2 * (max_depth_v + 1)))
+    if s1.pos() == 'v':
+        print("formula 2")
+        return - log((1 + len(path)) / (2 * max_depth_v))
+    print("formula 3")
+    return - log((1 + len(path)) / (2 * max_depth))  # con questa formula esce lo stesso risultato della libreria
+    # return - log((1 + len(path)) / (1 + 2 * max_depth))
 
 
 def comp_max_depth(pos):
@@ -400,7 +441,6 @@ def check_sim_wu_palmer(syn1, syn2):
     print("------ ok, sim_wu_palmer")
 
 
-
 def check_sim_shortest_path(syn1, syn2):
     for i in range(len(syn1)):
         for j in range(len(syn2)):
@@ -463,9 +503,16 @@ syn2 = wn.synsets(w2)
 
 
 # problema con il calcolo di sim_sp (per il fatto dei più hipernym)
-ss1 = wn.synset('book.n.01')
-ss2 = wn.synset('paper.n.05')
+# s1 = wn.synset('book.n.01')
+# s2 = wn.synset('paper.n.05')
+# s1 = wn.synset('bread.n.01')
+# s2 = wn.synset('butter.n.01')
+s1 = wn.synset('sexual_love.n.02')
+s2 = wn.synset('sexual_activity.n.01')
 
+# print(sim_leakcock_chodorow(s1, s2))
+# print(s1.lch_similarity(s2))
+# exit()
 
 def compute_all_sim(w1, w2):
     sim_wup = []
@@ -476,11 +523,11 @@ def compute_all_sim(w1, w2):
             sim_wup.append(sim_wu_palmer(syn1, syn2))
             sim_sp.append(sim_shortest_path(syn1, syn2))
             sim_lc.append(sim_leakcock_chodorow(syn1, syn2))
-    #max_wup = pd.Series(sim_wup, dtype=float)
-    #max_sp = pd.Series(sim_sp, dtype=float)
+    max_wup = pd.Series(sim_wup, dtype=float)
+    max_sp = pd.Series(sim_sp, dtype=float)
     max_lc = pd.Series(sim_lc, dtype=float)
-    # return max_wup.max(), max_sp.max(), max_lc.max()
-    return max_lc.max()
+    return max_wup.max(), max_sp.max(), max_lc.max()
+    # return max_lc.max()
 
 
 def run():
@@ -494,8 +541,8 @@ def run():
         w1 = df.loc[row, 'Word 1']
         w2 = df.loc[row, 'Word 2']
         check_leakcock_chodorow(wn.synsets(w1), wn.synsets(w2))
-        #result = compute_all_sim(w1, w2)
-        #print(result)
+        # result = compute_all_sim(w1, w2)
+        # print(result)
         # sim_wup.append()
         # sim_wup.append()
 
