@@ -1,5 +1,6 @@
 # import csv
 import pandas as pd
+import math
 from nltk.corpus import wordnet as wn
 from nltk.corpus.reader import WordNetError
 from math import log
@@ -19,6 +20,7 @@ def bck_sim_wu_palmer(sense1, sense2):
 def sim_wu_palmer(sense1, sense2):
     lcs = lowest_common_subsumer(sense1, sense2)
     if not lcs and sense1.pos() == 'v':
+        # print('NO lcs, verbo _______________________')
         return (2 * 1) / (depth(sense1) + depth(sense2) + 2)
     if not lcs:
         return None
@@ -268,9 +270,11 @@ def sim_shortest_path(s1, s2):
 
         path = p1 + p2
         path_len = len(path) + 1
+
     lcs = lowest_common_subsumer(s1, s2)
     # print("lcs: ", lcs)
     if lcs:
+        # print('LCS______________: ', s1, " - ", s2)
         # p1 = find_path([s1], lcs)
         p1 = get_path(s1, lcs)
         p1.remove(s1)
