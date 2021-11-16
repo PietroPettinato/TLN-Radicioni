@@ -1,11 +1,8 @@
-# import csv
 import pandas as pd
 import math
 from nltk.corpus import wordnet as wn
-from nltk.corpus.reader import WordNetError
 from math import log
 from math import isnan
-import numpy as np
 
 
 def bck_sim_wu_palmer(sense1, sense2):
@@ -176,7 +173,6 @@ def bck_depth(sense):
         sense = sense.hypernyms()[0]
     return depth
 
-
 def depth(sense):
     path_to_root = get_path_to_root(sense, search_max=True)
     depth = len(path_to_root)
@@ -253,7 +249,6 @@ def bck_find_path(s1, s2):
     # todo se s2 non viene trovato (risolgo fino ad "entity" ma non c'è) allora dovrei tornare None o [], questo non può accadere se s2==lcs
     return path
 
-
 def sim_shortest_path(s1, s2):
     path_len = 0
     if s1 == s2:
@@ -272,17 +267,10 @@ def sim_shortest_path(s1, s2):
         path_len = len(path) + 1
 
     lcs = lowest_common_subsumer(s1, s2)
-    # print("lcs: ", lcs)
     if lcs:
-        # print('LCS______________: ', s1, " - ", s2)
-        # p1 = find_path([s1], lcs)
         p1 = get_path(s1, lcs)
         p1.remove(s1)
-        # print(p1)
-        # p2 = find_path([s2], lcs)
         p2 = get_path(s2, lcs)
-        # print(p2)
-        # p2.insert(0, s2)
         p2.reverse()
         p2.remove(lcs)
         path = p1 + p2
@@ -409,7 +397,6 @@ def sim_leakcock_chodorow(s1, s2):
     return - log((1 + len(path)) / (2 * max_depth))  # con questa formula esce lo stesso risultato della libreria
     # return - log((1 + len(path)) / (1 + 2 * max_depth))
 
-
 def comp_max_depth(pos):
     depth = 0
     for ii in wn.all_synsets(pos):
@@ -443,14 +430,40 @@ def pearson_index(x, y):
             # d += pow(x[i]-y[i], 2)
 
             size += 1
+    return num / math.sqrt(denx * deny)
 
-    mex = num / math.sqrt(denx * deny)
 
-    print('pearson mex: ', mex)
-
-    smex = 1 - (6 * d / (size * (pow(size, 2) - 1)))
-
-    print('spearman mex: ', smex)
+def spearman_index(x, y):
+    map = {}
+    for k in x.index:
+        map[k] = x.loc[k]
+    # print(map)
+    boh = pd.DataFrame({'x': x, 'y': y})
+    # print(boh.to_string())
+    boh = boh.dropna()
+    print(boh)
+    # print(boh.to_string())
+    print('x_____________________________')
+    a = boh.sort_values('x')
+    print(a)
+    b = boh.sort_values('x')
+    '''
+    index = 0
+    for i in b['x']:
+        index += 1
+        if not isnan(i):
+            a['x'].loc[index] = index
+    '''
+    a['x'] = range(1, len(a) + 1)
+    print(a.to_string())
+    print('y_____________________________')
+    b = a.sort_values('y')
+    print(b)
+    b['y'] = range(1, len(a) + 1)
+    print(b)
+    pearson_index(b['x'], b['y'])
+    # print(boh.sort_values('y'))
+    # Map( Pair(x,indice(x)), Pair(y, indice(y)) )
 
 
 def find_no_hyp_synsets():
@@ -473,402 +486,67 @@ def find_no_hyp_synsets():
     print("\n", len(no_hyp))
     print("\n", len(all_hyp))
     # Eseguendo questa funzione è stato possibile contare il numero di synset che non hanno iperonimi pur non essendo la radice.
-    # Essi sono 180 su un totale di 2273 synsets
+    # Sono 180 su un totale di 2273 synsets
 
-
-# -----------------------------------
-# -------------- TESTS --------------
-# -----------------------------------
-
-def check_depth(syn):
-    for i in range(len(syn)):
-        s1hp = syn[i]._shortest_hypernym_paths(True)
-        real_depth = s1hp.get(list(s1hp)[len(s1hp) - 1])
-        my_depth = depth(syn[i])
-        # my_depth = get_path(syn[i])
-        if real_depth != my_depth:
-            print(syn[i])
-            print("my_depth  : ", my_depth)
-            print("real_depth: ", real_depth)
-            input("ERROR: Press Enter to continue...")
-    print("------ ok, depth")
-
-
-def check_shortest_path(syn1, syn2):
-    for i in range(len(syn1)):
-        for j in range(len(syn2)):
-            # print("\nc1[" + str(i) + "]: " + str(syn1[i]))
-            # print("c2[" + str(j) + "]: " + str(syn2[j]))
-            lcs = lowest_common_subsumer(syn1[i], syn2[j])
-            if lcs:
-                p1 = find_path([syn1[i]], lcs)
-                p2 = find_path([syn2[j]], lcs)
-                # p1.remove(syn1[i])
-                p2.insert(0, syn2[j])
-                p2.reverse()
-                p2.remove(lcs)
-                my_path = p1 + p2
-                real_path = syn1[i].shortest_path_distance(syn2[j], simulate_root=True and syn1[i].pos() == 'v')
-                if len(my_path) != real_path:
-                    print("my_path len  : ", my_path)
-                    print("real path len: ", real_path)
-                    input("ERROR: Press Enter to continue...")
-            else:
-                p1 = extract_ancestors([syn1[i]])
-                # p1.append(syn1[i])
-                p2 = extract_ancestors([syn2[j]])
-                p2.append(syn2[j])
-                # print("p1: ", p1)
-                # print("p2: ", p2)
-                my_path = p1 + p2
-                real_path = syn1[i].shortest_path_distance(syn2[j], simulate_root=True and syn1[i].pos() == 'v')
-                if real_path and (len(my_path) + 1) != real_path:
-                    print("lcs is None  : ", lcs)
-                    print("path: ", my_path)
-                    print("my_path len  : ", len(my_path))
-                    print("real path len: ", real_path)
-                    input("ERROR: Press Enter to continue...")
-    print("------ ok, shortest_path")
-
-
-def check_lowest_common_subsumer(syn1, syn2):
-    for i in range(len(syn1)):
-        for j in range(len(syn2)):
-            my_lcs = lowest_common_subsumer(syn1[i], syn2[j])
-            right_lcs = syn1[i].lowest_common_hypernyms(syn2[j])
-            # print("my_lcs  : ", my_lcs)
-            # print("real lcs: ", right_lcs)
-            # if (my_lcs is [] and right_lcs) or (my_lcs not in right_lcs):
-            if my_lcs and right_lcs and my_lcs not in right_lcs:
-                print("\nc1[" + str(i) + "]: " + str(syn1[i]))
-                print("c2[" + str(j) + "]: " + str(syn2[j]))
-                print("my_lcs  : ", my_lcs)
-                print("real lcs: ", right_lcs)
-                input("ERROR: Press Enter to continue...")
-            break
-    print("------ ok, lowest_common_subsumer")
-
-
-def list_replace(lst, old, new):
-    i = -1
-    try:
-        while 1:
-            i = lst.index(old, i + 1)
-            lst[i] = new
-    except ValueError:
-        pass
-
-
-def check_sim_wu_palmer(syn1, syn2):
-    for i in range(len(syn1)):
-        for j in range(len(syn2)):
-            my_sim = sim_wu_palmer(syn1[i], syn2[j])
-            right_sim = syn1[i].wup_similarity(syn2[j])
-            if my_sim != right_sim:
-                print("\nc1[" + str(i) + "]: " + str(syn1[i]))
-                print("c2[" + str(j) + "]: " + str(syn2[j]))
-                print("My sim_wu_palmer:    ", my_sim)
-                print("Right sim_wu_palmer: ", right_sim)
-                input("ERROR: Press Enter to continue...")
-                # break
-        # break
-    print("------ ok, sim_wu_palmer")
-
-
-def check_sim_shortest_path(syn1, syn2):
-    for i in range(len(syn1)):
-        for j in range(len(syn2)):
-            right_sim = syn1[i].path_similarity(syn2[j])
-            my_sim = sim_shortest_path(syn1[i], syn2[j])
-            if right_sim != my_sim:
-                print("\nc1[" + str(i) + "]: ", syn1[i])
-                print("c2[" + str(j) + "]: ", syn2[j])
-                print("Mine : ", my_sim)
-                print("Right: ", right_sim)
-                input("ERROR: Press Enter to continue...")
-            # print("right path 1: ", syn1[i]._shortest_hypernym_paths(False))
-            # print("right path 2: ", syn2[j]._shortest_hypernym_paths(False))
-    print("------ ok, sim_shortest_path")
-
-
-def check_leakcock_chodorow(syn1, syn2):
-    for i in range(len(syn1)):
-        for j in range(len(syn2)):
-            my_sim = sim_leakcock_chodorow(syn1[i], syn2[j])
-            try:
-                right_sim = syn1[i].lch_similarity(syn2[j])
-                if right_sim != my_sim:
-                    print("\nc1[" + str(i) + "]: ", syn1[i])
-                    print("c2[" + str(j) + "]: ", syn2[j])
-                    print("Right: ", right_sim)
-                    print("Mine : ", my_sim)
-                    input("ERROR: Press Enter to continue...")
-            except Exception:
-                # print("\nc1[" + str(i) + "]: ", syn1[i])
-                # print("c2[" + str(j) + "]: ", syn2[j])
-                # print("right sim error")
-                pass
-    print("------ ok, sim_leakcock_chodorow")
-
-
-#  Word 1 | Word 2 | Human (mean)
-# --------|--------|--------------
-#  love   |  sex   | 6.77
-#  tiger  |  cat   | 7.35
-
-
-# max_depth = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('n'))
-# max_depth_v = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets('v'))
-
-max_depth = comp_max_depth('n')
-# print("max_depth  : ", max_depth)
-max_depth_v = comp_max_depth('v')
-# print("max_depth_v: ", max_depth_v)
-
-
-# w1 = 'love'
-# w2 = 'sex'
-w1 = 'tiger'
-w2 = 'cat'
-syn1 = wn.synsets(w1)
-syn2 = wn.synsets(w2)
-# s1 = syn1[0]
-# s2 = syn2[0]
-
-
-# problema con il calcolo di sim_sp (per il fatto dei più hipernym)
-# s1 = wn.synset('book.n.01')
-# s2 = wn.synset('paper.n.05')
-# s1 = wn.synset('bread.n.01')
-# s2 = wn.synset('butter.n.01')
-s1 = wn.synset('sexual_love.n.02')
-s2 = wn.synset('sexual_activity.n.01')
-
-
-# print(sim_leakcock_chodorow(s1, s2))
-# print(s1.lch_similarity(s2))
-# exit()
 
 def compute_all_sim(w1, w2):
     sim_wup = []
     sim_sp = []
+    sim_sp_lib = []
     sim_lc = []
-
-    sim_wup2 = []
-    sim_sp2 = []
-    sim_lc2 = []
     for syn1 in wn.synsets(w1):
         for syn2 in wn.synsets(w2):
             sim_wup.append(sim_wu_palmer(syn1, syn2))
             sim_sp.append(sim_shortest_path(syn1, syn2))
+            sim_sp_lib.append(sim_shortest_path_lib(syn1, syn2))
             sim_lc.append(sim_leakcock_chodorow(syn1, syn2))
-
-            sim_wup2.append(syn1.wup_similarity(syn2))
-            sim_sp2.append(syn1.path_similarity(syn2))
-            try:
-                sim_lc2.append(syn1.lch_similarity(syn2))
-            except WordNetError:
-                sim_lc2.append(None)
     max_wup = pd.Series(sim_wup, dtype=float)
     max_sp = pd.Series(sim_sp, dtype=float)
+    max_sp_lib = pd.Series(sim_sp_lib, dtype=float)
     max_lc = pd.Series(sim_lc, dtype=float)
-
-    max_wup_2 = pd.Series(sim_wup2, dtype=float)
-    max_sp_2 = pd.Series(sim_sp2, dtype=float)
-    max_lc_2 = pd.Series(sim_lc2, dtype=float)
-    return max_wup.max(), max_sp.max(), max_lc.max(), max_wup_2.max(), max_sp_2.max(), max_lc_2.max()
-    # return max_lc.max()
+    return max_wup.max(), max_sp.max(), max_lc.max(), max_sp_lib.max()
 
 
 def run():
-    # read the file
     df = pd.read_csv('WordSim353.csv', header=0)
-    # print(df.to_string())
-
     sim_wup = []
     sim_sp = []
+    sim_sp_lib = []
     sim_lc = []
-
-    sim_wup2 = []
-    sim_sp2 = []
-    sim_lc2 = []
     for row in df.index:
         w1 = df.loc[row, 'Word 1']
         w2 = df.loc[row, 'Word 2']
-        # check_sim_wu_palmer(wn.synsets(w1), wn.synsets(w2))
-        # check_sim_shortest_path(wn.synsets(w1), wn.synsets(w2))
-        # check_leakcock_chodorow(wn.synsets(w1), wn.synsets(w2))
         result = compute_all_sim(w1, w2)
-        # print(result)
         sim_wup.append(result[0])
         sim_sp.append(result[1])
         sim_lc.append(result[2])
-
-        sim_wup2.append(result[3])
-        sim_sp2.append(result[4])
-        sim_lc2.append(result[5])
-
+        sim_sp_lib.append(result[3])
     df.insert(3, 'wup sim', sim_wup)
     df.insert(4, 'sp sim', sim_sp)
     df.insert(5, 'lc sim', sim_lc)
+    df.insert(6, 'sp sim lib', sim_sp_lib)
+    print(df)
 
-    df.insert(6, 'wup2 sim', sim_wup2)
-    df.insert(7, 'sp2 sim', sim_sp2)
-    df.insert(8, 'lc2 sim', sim_lc2)
-
-    # print(df.to_string())
-    # print(df)
-
-    x = df['Human (mean)']
-    y = df['wup sim']
-
-    # pearson_index(x, y)
-
-    # print(x)
-    map = {}
-    for k in x.index:
-        map[k] = x.loc[k]
-    # print(map)
-
-    boh = pd.DataFrame({'x':x, 'y':y})
-    # print(boh.to_string())
-    boh = boh.dropna()
-    print(boh)
-    # print(boh.to_string())
-    print('x_____________________________')
-    a = boh.sort_values('x')
-    print(a)
-
-    b = boh.sort_values('x')
-
-    '''
-    index = 0
-    for i in b['x']:
-        index += 1
-        if not isnan(i):
-            a['x'].loc[index] = index
-
-    '''
-
-    a['x'] = range(1, len(a)+1)
-    print(a.to_string())
-    print('y_____________________________')
-    b = a.sort_values('y')
-    print(b)
-    b['y'] = range(1, len(a)+1)
-    print(b)
-    pearson_index(b['x'], b['y'])
-
-    #print(boh.sort_values('y'))
-
-
-    # Map( Pair(x,indice(x)), Pair(y, indice(y)) )
-
-
+    print('Pearson index wup sim : ', pearson_index(df['Human (mean)'], df['wup sim']))
+    print('Pearson index sp sim  : ', pearson_index(df['Human (mean)'], df['sp sim']))
+    print('Pearson index sp sim lib  : ', pearson_index(df['Human (mean)'], df['sp sim lib']))
+    print('Pearson index lc sim  : ', pearson_index(df['Human (mean)'], df['lc sim']))
 
     df1 = pd.DataFrame({'1': df['Human (mean)'], '2': df['wup sim']})
-    print('pd.corr wup  :\n', df1.corr(method='spearman'))
+    df2 = pd.DataFrame({'1': df['Human (mean)'], '2': df['sp sim']})
+    df3 = pd.DataFrame({'1': df['Human (mean)'], '2': df['lc sim']})
+    df4 = pd.DataFrame({'1': df['Human (mean)'], '2': df['sp sim lib']})
 
-    '''
-    df2 = pd.DataFrame({'1': df['Human (mean)'], '2':df['sp sim']})
-    df3 = pd.DataFrame({'1': df['Human (mean)'], '2':df['lc sim']})
-
-    df4 = pd.DataFrame({'1': df['Human (mean)'], '2':df['wup2 sim']})
-    df5 = pd.DataFrame({'1': df['Human (mean)'], '2':df['sp2 sim']})
-    df6 = pd.DataFrame({'1': df['Human (mean)'], '2':df['lc2 sim']})
-
-    print('pd.corr wup  :\n', df1.corr(method='pearson'))
-    print('pd.corr wup2 :\n', df4.corr(method='pearson'))
-    print('pd.corr sp   :\n', df2.corr(method='pearson'))
-    print('pd.corr sp2  :\n', df5.corr(method='pearson'))
-    print('pd.corr lc   :\n', df3.corr(method='pearson'))
-    print('pd.corr lc2  :\n', df6.corr(method='pearson'))
-
-    print("------------------------------")
-
-    print('pd.corr wup  :\n', df1.corr(method='spearman'))
-    print('pd.corr wup2 :\n', df4.corr(method='spearman'))
-    print('pd.corr sp   :\n', df2.corr(method='spearman'))
-    print('pd.corr sp2  :\n', df5.corr(method='spearman'))
-    print('pd.corr lc   :\n', df3.corr(method='spearman'))
-    print('pd.corr lc2  :\n', df6.corr(method='spearman'))
-    '''
+    print('\nSpearman index wup sim : ', df1.corr(method='spearman').iloc[0, 1])
+    print('Spearman index sp sim  : ', df2.corr(method='spearman').iloc[0, 1])
+    print('Spearman index sp sim lib  : ', df4.corr(method='spearman').iloc[0, 1])
+    print('Spearman index lc sim  : ', df3.corr(method='spearman').iloc[0, 1])
+    # x = df['Human (mean)']
+    # y = df['wup sim']
+    # spearman_index(x, y)
     exit()
 
 
+max_depth = comp_max_depth('n')
+max_depth_v = comp_max_depth('v')
 run()
-
-
-# check_depth(syn1)  # todo qui errore depth a Synset('beloved.n.01')
-# check_depth(syn2)
-# check_lowest_common_subsumer(syn1, syn2)
-# check_shortest_path(syn1, syn2)
-# check_sim_wu_palmer(syn1, syn2)
-# check_leakcock_chodorow(syn1, syn2)
-# check_sim_shortest_path(syn1, syn2) # da errore ma sim_shortest_path() funziona
-# input("STOP HERE")
-
-s1 = []
-s2 = []
-my_sim_wp = []
-right_sim_wp = []
-my_sim_sp = []
-right_sim_sp = []
-my_sim_lc = []
-right_sim_lc = []
-for i in range(len(syn1)):
-    for j in range(len(syn2)):
-        # print("\nc1[" + str(i) + "]: ", syn1[i])
-        # print("c2[" + str(j) + "]: ", syn2[j])
-
-        s1.append(syn1[i])
-        s2.append(syn2[j])
-
-        my_sim_wp.append(sim_wu_palmer(syn1[i], syn2[j]))
-        right_sim_wp.append(syn1[i].wup_similarity(syn2[j]))
-
-        my_sim_sp.append(sim_shortest_path(syn1[i], syn2[j]))
-        # print('mia   : ', my_sim_sp[-1])
-        right_sim_sp.append(syn1[i].path_similarity(syn2[j]))
-        # print('giusta: ', right_sim_sp[-1])
-
-        my_sim_lc.append(sim_leakcock_chodorow(syn1[i], syn2[j]))
-        try:
-            right_sim_lc.append(syn1[i].lch_similarity(syn2[j]))
-        except WordNetError:
-            right_sim_lc.append(None)
-
-sim_df = pd.DataFrame({
-    "synset 1": s1,
-    "synset 2": s2,
-    "my_sim_wp": my_sim_wp,
-    "right_sim_wp": right_sim_wp,
-    "my_sim_sp": my_sim_sp,
-    "right_sim_sp": right_sim_sp,
-    "my_sim_lc": my_sim_lc,
-    "right_sim_lc": right_sim_lc
-})
-
-print(sim_df.to_string())
-# trova i massimi per ogni colonna
-print("\n--- massimi per ogni colonna ---\n")
-print(sim_df[sim_df.columns.difference(['synset 1', 'synset 2'])].max(axis='rows'))
-# trova gli indici di riga dei massimi per ogni colonna
-indexes = sim_df[sim_df.columns.difference(['synset 1', 'synset 2'])].idxmax(axis='rows')
-# print("\nindexes\n", indexes)
-# stampa riga di ogni massimo per ogni colonna
-print("\n--- riga di ogni massimo ---\n")
-print(sim_df.loc[indexes].to_string())
-
-max_df = pd.DataFrame(index=['my_sim_wp', 'right_sim_wp', 'my_sim_lc', 'right_sim_lc', 'my_sim_sp', 'right_sim_sp'],
-                      columns=['synset 1', 'synset 2', 'sim'])
-
-for i, v in indexes.items():
-    max_df.loc[i, 'synset 1'] = sim_df.loc[v, 'synset 1']
-    max_df.loc[i, 'synset 2'] = sim_df.loc[v, 'synset 2']
-    max_df.loc[i, 'sim'] = sim_df.loc[v, i]
-print(max_df.to_string())
-
-# read the file
-# dataset = pd.read_csv('WordSim353.csv', header=0)
-# print(dataset.to_string())
