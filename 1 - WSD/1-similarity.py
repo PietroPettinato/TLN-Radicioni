@@ -197,7 +197,7 @@ def sim_leakcock_chodorow(s1, s2):
     if s1.pos() == 'v':
         return - log((1 + len(path)) / (2 * max_depth_v))
 
-    return - log((1 + len(path)) / (2 * max_depth))  # con questa formula esce lo stesso risultato della libreria
+    return - log((1 + len(path)) / (2 * max_depth))
 
 
 def comp_max_depth(pos):
@@ -278,8 +278,6 @@ def find_no_hyp_synsets():
                     no_hyp.append(syn2)
     print("\n", len(no_hyp))
     print("\n", len(all_hyp))
-    # Eseguendo questa funzione è stato possibile contare il numero di synset che non hanno iperonimi pur non essendo la radice.
-    # Sono 180 su un totale di 2273 synsets
 
 
 def compute_all_sim(w1, w2):
