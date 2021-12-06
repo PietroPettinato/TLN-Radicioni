@@ -1,0 +1,203 @@
+--------------- NAME ---------------
+Conquering, conquer.v.03
+---------------- FE ----------------
+Conqueror, conqueror.n.01
+Theme, subject.n.01
+Degree, degree.n.01
+Manner, manner.n.02
+Means, means.n.02
+Place, topographic_point.n.01
+Time, fourth_dimension.n.01
+Purpose, purpose.n.01
+Instrument, instrument.n.02
+Depictive, delineative.s.01
+Frequency, frequency.n.01
+---------------- LU ----------------
+conquer.v, appropriate.v.02
+takeover.n, coup_detat.n.01
+capture.v, appropriate.v.02
+fall.v, fall.v.09
+take.v, take.v.21
+reduce.v, repress.v.01
+overcome.v, get_the_better_of.v.01
+
+
+
+--------------- NAME ---------------
+Hunting, hunt.v.01
+---------------- FE ----------------
+Hunter, hunter.n.01
+Food, food.n.01
+Instrument, instrumental_role.n.01
+Manner, manner.n.01
+Means, means.n.02
+Place, place.n.02
+Time, time.n.01
+Purpose, aim.v.02
+Frequency, frequency.n.01
+Degree, degree.n.01
+Iteration, iteration.n.03
+---------------- LU ----------------
+bag.v, bag.v.01
+catch.v, capture.v.06
+
+
+
+--------------- NAME ---------------
+Claim, claim.n.01
+---------------- FE ----------------
+Claimant, claimant.n.01
+Property, property.n.01
+Beneficiary, benefactive_role.n.01
+Role, function.n.02
+---------------- LU ----------------
+claim.n, title.n.07
+claim.v, claim.v.02
+call.v, call.v.24
+dibs.n, dibs.n.01
+
+
+
+--------------- NAME ---------------
+Erasing, erase.v.02
+---------------- FE ----------------
+Agent, agentive_role.n.01
+Information, information.n.02
+Cause, causal_agent.n.01
+Document, document.n.01
+Manner, manner.n.01
+Time, fourth_dimension.n.01
+Place, topographic_point.n.01
+Means, means.n.02
+---------------- LU ----------------
+strike.v, strike.v.14
+delete.v, erase.v.03
+erase.v, erase.v.02
+expunge.v, strike.v.14
+kill.v, kill.v.12
+
+
+
+--------------- NAME ---------------
+Trajectory, trajectory.n.01
+---------------- FE ----------------
+Theme, subject.n.01
+Source, beginning.n.04
+Path, way.n.05
+Goal, finish.n.04
+Descriptor, descriptor.n.02
+---------------- LU ----------------
+way.n, way.n.05
+
+
+
+--------------- NAME ---------------
+Amalgamation, amalgamation.n.01
+---------------- FE ----------------
+Parts, parts.n.01
+Whole, whole.n.02
+Part, parts.n.01
+Part, parts.n.01
+Degree, degree.n.02
+Manner, manner.n.01
+Result, solution.n.02
+Time, fourth_dimension.n.01
+Place, topographic_point.n.01
+Depictive, delineative.s.01
+Descriptor, descriptor.n.02
+---------------- LU ----------------
+merger.n, amalgamation.n.01
+amalgamate.v, mix.v.05
+blend.v, blend.v.03
+combine.v, compound.v.05
+commingle.v, blend.v.03
+fuse.v, blend.v.03
+intermix.v, blend.v.01
+meld.v, blend.v.03
+merge.v, unite.v.06
+unify.v, unify.v.01
+unite.v, unite.v.03
+band.v, band.v.01
+come.v, come.v.05
+combination.n, combination.n.07
+coalesce.v, blend.v.03
+consolidate.v, consolidate.v.01
+join.v, join.v.01
+jumble.v, jumble.v.01
+mix.v, blend.v.03
+
+
+
+--------------- NAME ---------------
+Convoy, convoy.n.01
+---------------- FE ----------------
+Vehicles, vehicle.n.01
+Convoy, convoy.n.01
+Property, property.n.02
+Name, name.n.01
+Domain, world.n.02
+Possessor, owner.n.02
+Cargo, cargo.n.01
+Source, beginning.n.04
+Path, path.n.04
+Goal, finish.n.04
+Direction, direction.n.01
+Support, support.n.04
+Place, topographic_point.n.01
+---------------- LU ----------------
+convoy.n, convoy.n.01
+train.n, caravan.n.01
+
+
+
+--------------- NAME ---------------
+Be, equal.v.01
+---------------- FE ----------------
+Symbol, symbol.n.01
+Representation, representation.n.02
+Time, time.n.02
+Circumstances, circumstance.n.01
+Symbol, symbol.n.01
+Representation, representation.n.02
+Content, content.n.01
+Equivalence,  equality.n.02
+Medium, medium.n.01
+---------------- LU ----------------
+translate.v, translate.v.01
+
+
+
+--------------- NAME ---------------
+Abundance, abundance.n.01
+---------------- FE ----------------
+Theme, subject.n.01
+Location, localization.n.01
+Degree, degree.n.01
+Time, fourth_dimension.n.01
+---------------- LU ---------------- (nessuna)
+
+
+
+--------------- NAME ---------------
+Hiding, concealment.n.03
+---------------- FE ----------------
+Obstruction, obstruction.n.02
+Object, object.n.01
+Observer, perceiver.n.01
+Degree, degree.n.01
+Agent, agentive_role.n.01
+Place, topographic_point.n.01
+Place, place.n.02
+Time, time.n.02
+Explanation, explanation.n.01
+Means, entail.v.01
+Purpose, purpose.n.01
+Manner, manner.n.01
+---------------- LU ----------------
+hide.v, hide.v.01
+conceal.v, hide.v.01
+mask.v, disguise.v.01
+shroud.v, shroud.v.02
+camouflage.v, camouflage.v.01
+block.v, obstruct.v.03
+cover.v, cover.v.11

@@ -1,0 +1,63 @@
+['Conquering', 'Conqueror', 'Theme', 'Degree', 'Manner', 'Means', 'Place', 'Time', 'Purpose', 'Instrument', 'Depictive', 'Frequency', 'conquer.v', 'takeover.n', 'capture.v', 'fall.v', 'take.v', 'reduce.v', 'overcome.v']
+
+
+## 'Hunting_success_or_failure' non trovato su WN, usiamo 'Hunting'
+## 'Particular_iteration' non trovato su WN, usiamo 'Iteration'
+['Hunting', 'Hunter', 'Food', 'Instrument', 'Manner', 'Means', 'Place', 'Time', 'Purpose', 'Frequency', 'Degree', 'Iteration', 'bag.v', 'catch.v']
+
+
+## 'Claim_ownership' non trovato su WN, usiamo 'Claim'
+['Claim', 'Claimant', 'Property', 'Beneficiary', 'Role', 'claim.n', 'claim.v', 'call.v', 'dibs.n']
+
+
+['Erasing', 'Agent', 'Information', 'Cause', 'Document', 'Manner', 'Time', 'Place', 'Means', 'strike.v', 'delete.v', 'erase.v', 'expunge.v', 'kill.v']
+
+
+## 'Planned_trajectory' non trovato su WN, usiamo 'Trajectory'
+['Trajectory', 'Theme', 'Source', 'Path', 'Goal', 'Descriptor', 'way.n']
+
+
+## 'Part_1' e 'Part_2' non trovati su WN, usiamo solo 'Part'
+## 'band together.v' non trovato su WN, usiamo solo 'band'
+## 'come together.v' non trovato su WN, usiamo solo 'come'
+['Amalgamation', 'Parts', 'Whole', 'Part_1', 'Part_2', 'Degree', 'Manner', 'Result', 'Time', 'Place', 'Depictive', 'Descriptor', 'merger.n', 'amalgamate.v', 'blend.v', 'combine.v', 'commingle.v', 'fuse.v', 'intermix.v', 'meld.v', 'merge.v', 'unify.v', 'unite.v', 'band.v', 'come.v', 'combination.n', 'coalesce.v', 'consolidate.v', 'join.v', 'jumble.v', 'mix.v']
+
+
+## 'Aggregate_property' non trovato su WN, usiamo solo 'Property'
+['Convoy', 'Vehicles', 'Convoy', 'Property', 'Name', 'Domain', 'Possessor', 'Cargo', 'Source', 'Path', 'Goal', 'Direction', 'Support', 'Place', 'convoy.n', 'train.n']
+
+
+
+## il frame 'Waver_between_options' contiene degli elemenenti ('Cognizer') che non sono presenti su WN, lo sostituiamo con 'Be_translation_equivalent'
+
+## 'Waver_between_options' non trovato su WN, usiamo solo 'Waver'
+## 'Option_1' e 'Option_2' non trovati su WN, usiamo solo 'Option'
+## 'Containing_event' non trovato su WN, usiamo solo 'Containing'
+## 'go back and forth' non trovato su WN, usiamo solo 'go'
+['Waver', 'Cognizer', 'Explanation', 'Options', 'Place', 'Time', 'Manner', 'Issue', 'Option', 'Option', 'Duration', 'Frequency', 'Degree', 'Containing', 'Circumstances', 'waver.v', 'vacillate.v', 'waffle.v', 'go.v', 'flip-flop.v', 'dither.v']
+
+## 'Be_translation_equivalent' non trovato su WN, usiamo solo 'Be'
+## 'Source_symbol' non trovato su WN, usiamo solo 'Symbol'
+## 'Source_representation' non trovato su WN, usiamo solo 'representation'
+## 'Target_representation' non trovato su WN, usiamo solo 'representation'
+## 'Target symbol' non trovato su WN, usiamo solo 'Symbol'
+['Be', 'Symbol', 'Representation', 'Time', 'Circumstances', 'Symbol', 'Representation', 'Content', 'Equivalence', 'Medium', 'translate.v']
+
+
+
+
+## il frame 'Bungling' contiene molti elemenenti che non sono presenti su WN, lo sostituiamo con 'Distributed_abundance'
+
+['Bungling', 'Degree', 'Depictive', 'Manner', 'Means', 'Agent', 'Patient', 'Place', 'Instrument', 'Time', 'Action', 'Area', 'bungler.n', 'fiasco.n', 'blow it.v', 'bungle.v', 'botch.v', 'ruin.v', 'mess up.v', 'fuck up.v', 'fuck-up [event].n', 'screw-up [event].n', 'mess-up.n', 'fuck-up [person].n', 'screw-up [person].n', 'fumble.v', 'fumble.n', 'foozle.v', 'screw up.v', 'bungling.a', 'bumbling.a', 'founder.v', 'bollix.v', 'bollix up.v', 'botch up.v', 'blow.v', 'ball up.v', 'flub.v', 'foul up.v', 'fluff.v', 'louse up.v', 'muck up.v', 'muff.v']
+
+## 'Distributed_abundance' non trovato su WN, usiamo solo 'Abundance'
+['Abundance', 'Theme', 'Location', 'Degree', 'Time']
+
+
+
+## 'Hiding_objects' non trovato su WN, usiamo solo 'Hiding'
+## 'Hidden_object' non trovato su WN, usiamo solo 'Object'
+## 'Potential_observer' non trovato su WN, usiamo solo 'Observer'
+## 'Hiding_place' non trovato su WN, usiamo solo 'Place'
+['Hiding', 'Obstruction', 'Object', 'Observer', 'Degree', 'Agent', 'Place', 'Place', 'Time', 'Explanation', 'Means', 'Purpose', 'Manner', 'hide.v', 'conceal.v', 'mask.v', 'shroud.v', 'camouflage.v', 'block.v', 'cover.v']
+
