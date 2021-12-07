@@ -36,9 +36,9 @@ def lesk_algorithm(w, s):
     context = set(s)
     signature = []
     for syn in wn.synsets(w):
-        signature = syn.definition().split()
+        signature = syn.definition().lower().split()
         for ex in syn.examples():
-            signature += ex.split()
+            signature += ex.lower().split()
         signature = set(signature)
         overlap = signature.intersection(context)
         if len(overlap) > max_overlap:
