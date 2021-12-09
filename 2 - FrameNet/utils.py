@@ -60,7 +60,7 @@ def get_frame_words(f):
 
 
 def build_corpus_gold(frame_set, frame_id):
-    # raccogliamo gli elemenenti in una lista
+    # raccogliamo gli elementi in una lista
     f = fn.frame_by_id(frame_id)
     frame_words_list = [frame_set[frame_id]]
     frame_words_list += get_frame_words(f)
