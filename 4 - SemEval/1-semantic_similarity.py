@@ -1,23 +1,10 @@
 # risultati di semeval_mapper.ipynb
-# Pettinato      :	coppie nell'intervallo 51-100
 # Donini         :	coppie nell'intervallo 201-250
 
 import pandas as pd
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity as sck_cs
-
-
-df = pd.read_csv('annotated_data_pietro.tsv', sep='\t', names=['term 1', 'term 2', 'val Pietro'])
-
-# todo aggiungere a df un'altra colonna con i valori di Massimo
-# il file 'annotated_data_massimo.tsv' è la copia del mio ma ho cambiato i primi 4 valori per fare prove con gli indici e non avere l'indice == 1
-df_massimo = pd.read_csv('annotated_data_massimo.tsv', sep='\t', names=['1', '2', 'val'])
-df['val Massimo'] = df_massimo['val']
-print(df)
-print('\nMean value Pietro:', df['val Pietro'].sum() / len(df['val Pietro']))
-print('\nMean value Massimo:', df['val Massimo'].sum() / len(df['val Massimo']))
-print('\nPearson index:\n', df.corr(method='pearson'))
-print('\nSpearman index:\n', df.corr(method='spearman'))
+from sklearn.metrics import cohen_kappa_score
+import re
 
 
 def term_to_bn_syn_ids(term):
@@ -33,10 +20,12 @@ def term_to_bn_syn_ids(term):
     with open('utils/SemEval17_IT_senses2synsets.txt', 'r') as f:
         for line in f.readlines():
             if start:  # iniziamo a raccogliere gli id
-                if line[0] == '#':  # se la linea inizia per '#' vuol dire che iniziano gli ID di un nuovo termine e che quindi dobbiamo fermarci
+                if line[
+                    0] == '#':  # se la linea inizia per '#' vuol dire che iniziano gli ID di un nuovo termine e che quindi dobbiamo fermarci
                     return res
                 res.append(line.rstrip('\n'))
-            elif line.rstrip('\n') == term:  # quando troviamo il termine possiamo iniziare a raccogliere i babelSynsetIDs (start = True)
+            elif line.rstrip(
+                    '\n') == term:  # quando troviamo il termine possiamo iniziare a raccogliere i babelSynsetIDs (start = True)
                 start = True
     return res
 
@@ -49,8 +38,8 @@ def bn_syn_ids_to_nasari(bn_id):
 
     :return: il vettore NASARI
     """
-    # todo che succede se il bn_id non è presente nel file? Bisogna tornare la lista vuota (se non lo fa già)
-    nasari_vector = df_nasari[df_nasari.index.str.startswith(bn_id).fillna(False)]  # prendiamo la riga che inizia con il babelSynsetID
+    nasari_vector = df_nasari[
+        df_nasari.index.str.startswith(bn_id).fillna(False)]  # prendiamo la riga che inizia con il babelSynsetID
     return nasari_vector
 
 
@@ -66,89 +55,91 @@ def get_nasari_vectors(term):
     nasari_vectors = []
     for id in bn_syn_ids:
         vector = bn_syn_ids_to_nasari(id)
+        '''
+        # con questa porzione di codice, calcola la similarità con pochissimi termini
         if vector.empty:
             print(f'al termine \'{term}\' manca il babelSynsetID {id} in \'mini_NASARI.tsv\', clear() dei vettori trovati e return')
             nasari_vectors.clear()
             return nasari_vectors
-        nasari_vectors.append(vector)
+        '''
+        if not vector.empty:  # escludiamo gli ID per cui non abbiamo i vettori NASARI
+            nasari_vectors.append(vector)
     return nasari_vectors
-
-'''
-t = 'terremoto'
-res = term_to_bn_syn_ids('#' + t)
-print(f'\n\nBabelSynsetIDs for term \'{t}\':\n {res}')
-nasari_vector = bn_syn_ids_to_nasari(res[0])
-# nasari_vector = bn_syn_ids_to_nasari('blabla')
-print('nasari_vector:', nasari_vector)
-print('nasari_vector:', get_nasari_vectors(t))  # FUNZIONAAAAAA
-'''
 
 
 def cosine_similarity(v1, v2):
     num = np.dot(v1, v2)
     den = np.linalg.norm(v1) * np.linalg.norm(v2)
-    return num/den
+    return num / den
 
 
+# ----------------------------------------
+# -------------- CONSEGNA 1 --------------
+# ----------------------------------------
+
+
+print('\n-----------------------------------------------\n')
+print('Dati con le annotazioni manuali:')
+df = pd.read_csv('annotated_data_pietro.tsv', sep='\t', names=['term 1', 'term 2', 'val Pietro'])
+# todo aggiungere a df un'altra colonna con i valori delle annotazioni di Massimo
+# il file 'annotated_data_massimo.tsv' è la copia del mio ma ho cambiato i primi 4 valori per fare prove con gli indici e non avere l'indice == 1
+df_massimo = pd.read_csv('annotated_data_massimo.tsv', sep='\t', names=['1', '2', 'val'])
+df['val Massimo'] = df_massimo['val']
+print(df.to_string())
+
+
+print('\n-----------------------------------------------\n')
+print('Indici di correlazione fra gli annotatori:')
+print('\nPearson index: ',
+      df['val Pietro'].corr(df['val Massimo'], method='pearson'))  # indice di Pearson fra annotazioni Pietro e Massimo
+print('Spearman index: ', df['val Pietro'].corr(df['val Massimo'],
+                                                method='spearman'))  # indice di Spearman fra annotazioni Pietro e Massimo
+
+
+print('\n-----------------------------------------------\n')
+print('Aggiunta del valore medio fra i valori delle annotazioni:')
+df['mean value'] = (df['val Pietro'] + df['val Massimo']) / 2  # aggiunta di una colonna con il valore medio per i calcoli successivi
+df['mean value norm'] = df['mean value'] / 4  # valore medio normalizzato in [0,1]
+print(df.to_string())
+
+
+# calcoliamo la max cos_sim per tutti i termini
 df_nasari = pd.read_csv('utils/mini_NASARI.tsv', sep='\t', header=None, index_col=0)  # usiamo la colonna con i babelSynsetIDs come indici del dataframe
 cos_sim_list = []
+syn1 = []
+syn2 = []
 for t1, t2 in zip(df['term 1'], df['term 2']):
     nasari_t1 = get_nasari_vectors(t1)
     nasari_t2 = get_nasari_vectors(t2)
     if nasari_t1 and nasari_t2:
         max_sim = 0
+        syn = (None, None)
         for v1 in nasari_t1:
             for v2 in nasari_t2:
-                cos_sim = cosine_similarity(np.array(v1.iloc[0][1:]), np.array(v2.iloc[0][1:]))
+                cos_sim = cosine_similarity(np.array(v1.iloc[0][1:]), np.array(v2.iloc[0][1:]))  # dalla colonna 1 all'ultima abbiamo i valori
                 if cos_sim > max_sim:
                     max_sim = cos_sim
-        print('\nt1 = ', t1)
-        print('t2 = ', t2)
-        print('max cos_sim:', max_sim)
+                    syn = (v1.index[0], v2.index[
+                        0])  # come indice della Serie abbiamo i babelSynsetID, ne teniamo traccia per la seconda consegna
         cos_sim_list.append(max_sim)
-
-        # todo i valori con None (Nan nel data frame) sono troppi, forse c'è un errore, Pio fa così: (molti hanno fatto l'accesso a BabelNet)
-        '''
-        for (id1, v1), (id2, v2) in itertools.product(w1_vectors, w2_vectors): # generate cartesian product of all possible pairs of senses
-        if not(v1 is None or v2 is None): # skip if one or both of v1,v2 are none
-            scores.append(similarity_func(v1, v2))
-            senses.append((id1,id2))
-        '''
-        # input('---- continue? ----')
+        syn1.append(syn[0])
+        syn2.append(syn[1])
     else:
-        print('\nt1 = ', t1)
-        print('t2 = ', t2)
-        print('max cos_sim:', None)
-        print('nasari_t1 e/o nasari_t2 è vuoto')
-        cos_sim_list.append(None)
-        # input('---- continue? ----')
+        cos_sim_list.append(None)  # se i vettori NASARI non sono presenti nel file non possiamo calcolare la cos_sim ed inseriamo None
+        syn1.append(None)  # anche i synset non ci servono
+        syn2.append(None)
 
+
+print('\n-----------------------------------------------\n')
+print('Aggiunta dei valori annotati dal sistema (\'system val\'):')
 df['system val'] = cos_sim_list
-print(df)
+print(df.to_string())
 
 
-# prova per cotrollare se il calcolo della cos_sim è corretto (è corretto)
-cos_sim_list2 = []
-for t1, t2 in zip(df['term 1'], df['term 2']):
-    nasari_t1 = get_nasari_vectors(t1)
-    nasari_t2 = get_nasari_vectors(t2)
-    if nasari_t1 and nasari_t2:
-        max_sim = 0
-        for v1 in nasari_t1:
-            for v2 in nasari_t2:
-                # n1 = np.array(v1).reshape(1, len(v1))
-                # n2 = np.array(v2).reshape(1, len(v2))
-                cos_sim = sck_cs(v1, v2)[0][0]
-                if cos_sim > max_sim:
-                    max_sim = cos_sim
-        cos_sim_list2.append(max_sim)
-    else:
-        cos_sim_list2.append(None)
-df['system val check'] = cos_sim_list2
-print(df)
-
-
-
+print('\n-----------------------------------------------\n')
+print('Indici di correlazione fra \'mean value\' e \'system val\':')
+print('\nPearson index: ', df['mean value'].corr(df['system val'], method='pearson'))
+print('Spearman index: ', df['mean value'].corr(df['system val'], method='spearman'))
 
 
 '''
@@ -163,4 +154,66 @@ per ogni vettore NASARI di termine_1
 		calcolo cos_sim
 		aggiorno max_sim
 ritorno max_sim (forse serve normalizzazione fra [0,4])
+'''
+
+# ----------------------------------------
+# -------------- CONSEGNA 2 --------------
+# ----------------------------------------
+
+print('\n-----------------------------------------------\n')
+print('Livello di agreement nelle annotazioni (kappa di Cohen) fra \'val Pietro\' e \'val Massimo\':')
+print('\nKappa di Cohen: ', cohen_kappa_score(df['val Pietro'].astype(int), df['val Massimo'].astype(int)))
+
+
+# syn1 e syn2 sono stati annotati durante il calcolo della cos_sim
+df['babelSynsetID term 1'] = syn1
+df['babelSynsetID term 2'] = syn2
+print('\n-----------------------------------------------\n')
+print('Aggiunta dei sensi trovati dal sistema (\'babelSynsetID term 1\', \'babelSynsetID term 2\'):')
+print(df.to_string())
+
+
+# carichiamo i sensi annotati a mano
+df_gold = pd.read_csv('annotated_data_syn.tsv', sep='\t', names=['term 1', 'term 2', 'sim val', 'bnid 1', 'bnid 2', 'bn_terms 1', 'bn_terms 2'])
+# print(df_gold.to_string())
+
+# puliamo i babelSynsetID togliendo tutto ciò che è da '__' in poi (abbiamo le stringhe come nella prima colonna del file 'mini_NASARI.tsv')
+res_alg1 = [re.sub('__.*$', '', str(s)) for s in df['babelSynsetID term 1']]
+res_alg2 = [re.sub('__.*$', '', str(s)) for s in df['babelSynsetID term 2']]
+
+# costruiamo un dataframe con i risultati del sistema e quelli annotati a mano per calcolare l'accuracy
+df2 = pd.DataFrame({'alg 1': res_alg1,
+                    'gold 1': df_gold['bnid 1'],
+                    'alg 2': res_alg2,
+                    'gold 2': df_gold['bnid 2']})
+
+mask1 = df2['alg 1'] == df2['gold 1'] # controlliamo la prima colonna di termini
+mask2 = df2['alg 2'] == df2['gold 2'] # controlliamo la seconda colonna di termini
+acc1 = (len(df2[mask1]), len(df2[mask2]))
+
+mask3 = (df2['alg 1'] == df2['gold 1']) & (df2['alg 2'] == df2['gold 2']) # controlliamo le coppie di termini
+acc2 = len(df2[mask3])
+
+# print(df2.to_string())
+
+print('\n-----------------------------------------------\n')
+print('Calcolo dell\'accuracy:')
+print('\nAccuracy sui singoli termini:')
+print(f'\tprima colonna  :  {acc1[0]}/50')
+print(f'\tseconda colonna:  {acc1[1]}/50')
+print(f'Accuracy sulle coppie di termini:  {acc2}/50')
+
+
+
+'''
+	ragionamento seconda parte eserictazione 4
+
+accedere a BN per trovare i babelSynID dei sensi ed avere i termini 
+usare i termini per annotare manualmente il file (come descritto alla sld 13)
+
+calcoliamo la kappa di Cohen fra le colonne 'val Pietro' e 'val Massimo'
+
+troviamo quali sono i babelSynID che hanno la max cos_sim (nel codice a "if cos_sim > max_sim: max_sim = cos_sim" teniamo memoria del senso che ha la max cos_sim)
+
+calcoliamo accuracy sui singoli termini (senso_gold == senso_algor) che sulle coppie ([senso1_gold, senso2_gold] == [senso1_algor, senso2_algor])
 '''
