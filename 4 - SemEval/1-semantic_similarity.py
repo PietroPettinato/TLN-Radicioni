@@ -20,12 +20,10 @@ def term_to_bn_syn_ids(term):
     with open('utils/SemEval17_IT_senses2synsets.txt', 'r') as f:
         for line in f.readlines():
             if start:  # iniziamo a raccogliere gli id
-                if line[
-                    0] == '#':  # se la linea inizia per '#' vuol dire che iniziano gli ID di un nuovo termine e che quindi dobbiamo fermarci
+                if line[0] == '#':  # se la linea inizia per '#' vuol dire che iniziano gli ID di un nuovo termine e che quindi dobbiamo fermarci
                     return res
                 res.append(line.rstrip('\n'))
-            elif line.rstrip(
-                    '\n') == term:  # quando troviamo il termine possiamo iniziare a raccogliere i babelSynsetIDs (start = True)
+            elif line.rstrip('\n') == term:  # quando troviamo il termine possiamo iniziare a raccogliere i babelSynsetIDs (start = True)
                 start = True
     return res
 
@@ -38,8 +36,7 @@ def bn_syn_ids_to_nasari(bn_id):
 
     :return: il vettore NASARI
     """
-    nasari_vector = df_nasari[
-        df_nasari.index.str.startswith(bn_id).fillna(False)]  # prendiamo la riga che inizia con il babelSynsetID
+    nasari_vector = df_nasari[df_nasari.index.str.startswith(bn_id).fillna(False)]  # prendiamo la riga che inizia con il babelSynsetID
     return nasari_vector
 
 
@@ -55,13 +52,6 @@ def get_nasari_vectors(term):
     nasari_vectors = []
     for id in bn_syn_ids:
         vector = bn_syn_ids_to_nasari(id)
-        '''
-        # con questa porzione di codice, calcola la similarità con pochissimi termini
-        if vector.empty:
-            print(f'al termine \'{term}\' manca il babelSynsetID {id} in \'mini_NASARI.tsv\', clear() dei vettori trovati e return')
-            nasari_vectors.clear()
-            return nasari_vectors
-        '''
         if not vector.empty:  # escludiamo gli ID per cui non abbiamo i vettori NASARI
             nasari_vectors.append(vector)
     return nasari_vectors
@@ -79,7 +69,7 @@ def cosine_similarity(v1, v2):
 
 
 print('\n-----------------------------------------------\n')
-print('Dati con le annotazioni manuali:')
+print('Dati con le annotazioni manuali:\n')
 df = pd.read_csv('annotated_data_pietro.tsv', sep='\t', names=['term 1', 'term 2', 'val Pietro'])
 # todo aggiungere a df un'altra colonna con i valori delle annotazioni di Massimo
 # il file 'annotated_data_massimo.tsv' è la copia del mio ma ho cambiato i primi 4 valori per fare prove con gli indici e non avere l'indice == 1
@@ -90,16 +80,14 @@ print(df.to_string())
 
 print('\n-----------------------------------------------\n')
 print('Indici di correlazione fra gli annotatori:')
-print('\nPearson index: ',
-      df['val Pietro'].corr(df['val Massimo'], method='pearson'))  # indice di Pearson fra annotazioni Pietro e Massimo
-print('Spearman index: ', df['val Pietro'].corr(df['val Massimo'],
-                                                method='spearman'))  # indice di Spearman fra annotazioni Pietro e Massimo
+print('\nPearson index : ', df['val Pietro'].corr(df['val Massimo'], method='pearson'))  # indice di Pearson fra annotazioni Pietro e Massimo
+print('Spearman index: ', df['val Pietro'].corr(df['val Massimo'], method='spearman'))  # indice di Spearman fra annotazioni Pietro e Massimo
 
 
 print('\n-----------------------------------------------\n')
-print('Aggiunta del valore medio fra i valori delle annotazioni:')
+print('Aggiunta del valore medio fra i valori delle annotazioni:\n')
 df['mean value'] = (df['val Pietro'] + df['val Massimo']) / 2  # aggiunta di una colonna con il valore medio per i calcoli successivi
-df['mean value norm'] = df['mean value'] / 4  # valore medio normalizzato in [0,1]
+df['mean value norm'] = df['mean value'] / 4  # valore medio normalizzato in [0,1] per paragonarlo con i risultati dell'algoritmo
 print(df.to_string())
 
 
@@ -119,8 +107,7 @@ for t1, t2 in zip(df['term 1'], df['term 2']):
                 cos_sim = cosine_similarity(np.array(v1.iloc[0][1:]), np.array(v2.iloc[0][1:]))  # dalla colonna 1 all'ultima abbiamo i valori
                 if cos_sim > max_sim:
                     max_sim = cos_sim
-                    syn = (v1.index[0], v2.index[
-                        0])  # come indice della Serie abbiamo i babelSynsetID, ne teniamo traccia per la seconda consegna
+                    syn = (v1.index[0], v2.index[0])  # come indice della Serie abbiamo i babelSynsetID, ne teniamo traccia per la seconda consegna
         cos_sim_list.append(max_sim)
         syn1.append(syn[0])
         syn2.append(syn[1])
@@ -131,34 +118,21 @@ for t1, t2 in zip(df['term 1'], df['term 2']):
 
 
 print('\n-----------------------------------------------\n')
-print('Aggiunta dei valori annotati dal sistema (\'system val\'):')
+print('Aggiunta dei valori annotati dal sistema (\'system val\'):\n')
 df['system val'] = cos_sim_list
 print(df.to_string())
 
 
 print('\n-----------------------------------------------\n')
 print('Indici di correlazione fra \'mean value\' e \'system val\':')
-print('\nPearson index: ', df['mean value'].corr(df['system val'], method='pearson'))
+print('\nPearson index : ', df['mean value'].corr(df['system val'], method='pearson'))
 print('Spearman index: ', df['mean value'].corr(df['system val'], method='spearman'))
 
-
-'''
-	ragionamento prima parte eserictazione 4
-
-passiamo da termine a/ai babelSynID con il file SemEval17_IT_senses2synsets.txt
-
-con il/i babelSynID prendiamo il/i vettori NASARI con il file mini_NASARI.tsv
-
-per ogni vettore NASARI di termine_1
-	per ogni vettore NASARI di termine_2
-		calcolo cos_sim
-		aggiorno max_sim
-ritorno max_sim (forse serve normalizzazione fra [0,4])
-'''
 
 # ----------------------------------------
 # -------------- CONSEGNA 2 --------------
 # ----------------------------------------
+
 
 print('\n-----------------------------------------------\n')
 print('Livello di agreement nelle annotazioni (kappa di Cohen) fra \'val Pietro\' e \'val Massimo\':')
@@ -169,7 +143,7 @@ print('\nKappa di Cohen: ', cohen_kappa_score(df['val Pietro'].astype(int), df['
 df['babelSynsetID term 1'] = syn1
 df['babelSynsetID term 2'] = syn2
 print('\n-----------------------------------------------\n')
-print('Aggiunta dei sensi trovati dal sistema (\'babelSynsetID term 1\', \'babelSynsetID term 2\'):')
+print('Aggiunta dei sensi trovati dal sistema (\'babelSynsetID term 1\', \'babelSynsetID term 2\'):\n')
 print(df.to_string())
 
 
@@ -187,11 +161,11 @@ df2 = pd.DataFrame({'alg 1': res_alg1,
                     'alg 2': res_alg2,
                     'gold 2': df_gold['bnid 2']})
 
-mask1 = df2['alg 1'] == df2['gold 1'] # controlliamo la prima colonna di termini
-mask2 = df2['alg 2'] == df2['gold 2'] # controlliamo la seconda colonna di termini
+mask1 = df2['alg 1'] == df2['gold 1']  # controlliamo la prima colonna di termini
+mask2 = df2['alg 2'] == df2['gold 2']  # controlliamo la seconda colonna di termini
 acc1 = (len(df2[mask1]), len(df2[mask2]))
 
-mask3 = (df2['alg 1'] == df2['gold 1']) & (df2['alg 2'] == df2['gold 2']) # controlliamo le coppie di termini
+mask3 = (df2['alg 1'] == df2['gold 1']) & (df2['alg 2'] == df2['gold 2'])  # controlliamo le coppie di termini
 acc2 = len(df2[mask3])
 
 # print(df2.to_string())
