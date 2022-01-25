@@ -24,7 +24,7 @@ anello	fidanzamento	2.5	bn:00008287n	bn:00010152n	anello	fidanzata,Promessa di m
 latino	tedesco	3	bn:00050161n	bn:00040293n	Lingua latina	Lingua tedesca-lingua alto-tedesca
 classe operaia	fabbrica	3	bn:00049570n	bn:00032675n	proletariato,classe lavoratrice	stabilimento,manifattura
 Shakespeare	Dickens	3	bn:00008556n	bn:00017842n	William Shakespeare	Charles Dickens
-banconota	prete	0	bn:00008375n	bn:00024459n	banconota	pastorecurato,Parroco
+banconota	prete	0	bn:00008375n	bn:00024459n	banconota	pastore,curato,Parroco
 strumento	lavoro	1	bn:00077585n	bn:00030616n	attrezzo,utensile	occupazione,impiego
 cinghiale nano	suidi	2.7	bn:03100066n	bn:00033468n	Porcula salvania,Sus salvanius,Cinghiale nano	Suidae,Suidi
 suffragio	uscita	0	bn:00067845n	bn:00032163n	diritto di voto	escursione,gita,passeggiata
@@ -44,7 +44,7 @@ incoronazione	acqua	0	bn:00022800n	bn:00042379n	investitura,coronazione	H₂O
 vocalista	pentagramma	1.7	bn:15167394n	bn:00073805n	vocalista	rigo
 spareggio	pallacanestro	1.9	bn:00062962n	bn:00008889n	play-off	basket,basketball
 forze armate	difesa	3.8	bn:00005732n	bn:00005732n	Forza armata,forze militari	forze armate,Forza armata,forze militari
-lago	nuvola	1	bn:00049709n	bn:00020002n	lago	nubenembo
+lago	nuvola	1	bn:00049709n	bn:00020002n	lago	nube,nembo
 monastero	doccia	0	bn:13460974n	bn:00071324n	monastero	doccia
 lingua madre	lingua	3.9	bn:00034782n	bn:00049910n	madrelingua,lingua materna	linguaggio,idioma
 porto	incarto	0	bn:00063640n	bn:00060120n	porto	imballaggio,imballo

@@ -71,8 +71,6 @@ def cosine_similarity(v1, v2):
 print('\n-----------------------------------------------\n')
 print('Dati con le annotazioni manuali:\n')
 df = pd.read_csv('annotated_data_pietro.tsv', sep='\t', names=['term 1', 'term 2', 'val Pietro'])
-# todo aggiungere a df un'altra colonna con i valori delle annotazioni di Massimo
-# il file 'annotated_data_massimo.tsv' è la copia del mio ma ho cambiato i primi 4 valori per fare prove con gli indici e non avere l'indice == 1
 df_massimo = pd.read_csv('annotated_data_massimo.tsv', sep='\t', names=['1', '2', 'val'])
 df['val Massimo'] = df_massimo['val']
 print(df.to_string())
@@ -177,17 +175,3 @@ print(f'\tprima colonna  :  {acc1[0]}/50')
 print(f'\tseconda colonna:  {acc1[1]}/50')
 print(f'Accuracy sulle coppie di termini:  {acc2}/50')
 
-
-
-'''
-	ragionamento seconda parte eserictazione 4
-
-accedere a BN per trovare i babelSynID dei sensi ed avere i termini 
-usare i termini per annotare manualmente il file (come descritto alla sld 13)
-
-calcoliamo la kappa di Cohen fra le colonne 'val Pietro' e 'val Massimo'
-
-troviamo quali sono i babelSynID che hanno la max cos_sim (nel codice a "if cos_sim > max_sim: max_sim = cos_sim" teniamo memoria del senso che ha la max cos_sim)
-
-calcoliamo accuracy sui singoli termini (senso_gold == senso_algor) che sulle coppie ([senso1_gold, senso2_gold] == [senso1_algor, senso2_algor])
-'''

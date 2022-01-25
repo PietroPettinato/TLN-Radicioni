@@ -4,12 +4,6 @@
 #
 # dare questo comando per verificare se è tutto ok, stampa una lista con la frase "'The', 'Fulton', 'County', 'Grand', 'Jury', 'said', 'Friday' ....."
 # print(sc.sents())
-#
-#
-# possibile funione per caricare manualmente il corpus (cambiare il path)
-# semcor = LazyCorpusLoader(
-# "semcor", SemcorCorpusReader, r"brown./tagfiles/br-.*\.xml", wordnet
-# )  # Must be defined *after* wordnet corpus.
 
 from nltk.corpus import semcor as sc
 from nltk.corpus import wordnet as wn
@@ -78,7 +72,6 @@ def run():
         # aggiorniamo l'accuracy
         tot, corrects = accuracy
         tot += 1
-        # if best_sense and sense_gold and (best_sense.lemmas()[0] == sense_gold): # todo controllare quale if usare, il secondo è corretto o scarta anche alcune giuste?
         if best_sense and sense_gold and (str(best_sense.lemmas()[0]) == str(sense_gold)):
             corrects += 1
             # print('corrects++')

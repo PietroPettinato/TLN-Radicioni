@@ -1,36 +1,36 @@
 terremoto	scossa	4
-patrimonio	azione	1
-ebreo	Gerusalemme	1
-nuvolosità	previsione	2
+patrimonio	azione	0
+ebreo	Gerusalemme	3.3
+nuvolosità	previsione	3
 dizionario	enciclopedia	4
 zecca	museo	0
-sedia	sgabello	3.8
+sedia	sgabello	3.9
 spagnolo	umidità	0
 lattina	bottiglia	3
 mosca	formica	3
 mito	satira	0
-centro della città	autobus	1
-coda	Boeing 747-200	2
+centro della città	autobus	0
+coda	Boeing 747-200	2.2
 opera d'arte	artista	3
-NATO	alleanza	3.3
+NATO	alleanza	3.7
 re	sovrano	4
 ritmo	cadenza	4
-Alexander Fleming	penicillina	3.3
+Alexander Fleming	penicillina	3.2
 flauto	musica	3
-airone cenerino	lago	2.6
+airone cenerino	lago	2.8
 viscosità	spruzzo	0
 hardware	case	2
 anello	fidanzamento	2.5
 latino	tedesco	3
-classe operaia	fabbrica	3
+classe operaia	fabbrica	3.2
 Shakespeare	Dickens	3
 banconota	prete	0
-strumento	lavoro	1
-cinghiale nano	suidi	2.7
+strumento	lavoro	 1
+cinghiale nano	suidi	2
 suffragio	uscita	0
-stella	luminosità	2.8
+stella	luminosità	2.5
 trota	chitarra	0
-dollaro	milionario	2.5
+dollaro	milionario	2.8
 cifra	numero	4
 burrasca	coperta	0
 Obama	Clinton	3
@@ -38,13 +38,13 @@ personaggio secondario	film	2.8
 Juventus	Bayern Monaco	3
 cambiamento climatico	precipitazione	3
 IA	batteria	0
-capolavoro	Gioconda	3.2
-crimine	aggressione	3.3
+capolavoro	Gioconda	3.6
+crimine	aggressione	3
 incoronazione	acqua	0
 vocalista	pentagramma	1.7
-spareggio	pallacanestro	1.9
+spareggio	pallacanestro	1.5
 forze armate	difesa	3.8
-lago	nuvola	1
+lago	nuvola	1.2
 monastero	doccia	0
-lingua madre	lingua	3.9
+lingua madre	lingua	4
 porto	incarto	0
